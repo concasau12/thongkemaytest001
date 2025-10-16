@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý máy test</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+/* ===== MAIN / TABLE ===== */
+  main {
+    padding: 10px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    background: #f4f4f4;
+    box-sizing: border-box;
+    white-space: nowrap;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    min-width: 800px;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    text-align: center;
+    font-size: 13px;
+    word-wrap: break-word;
+    white-space: normal;
+  }
+
+  th {
+    position: relative;
+    background-color: #007bff;
+    color: white;
+    user-select: none;
+  }
+
+  th.resizing {
+    background-color: #d0ebff;
+  }
+
+  th:nth-child(15), td:nth-child(15) { min-width: 200px; max-width: 500px; } 
+  th:nth-child(13), td:nth-child(13) { min-width: 90px; max-width: 200px; } 
+  th:nth-child(14), td:nth-child(14) { min-width: 50px; max-width: 100px; } 
+
+
+</style>
+
+</head>
+
+<body>
+  <header>
+    <h2>📥 Nhập Dữ Liệu Máy Test</h2>
+    <div class="nav-bar">
+        <a href="nhaplieu.html" class="btn-nav" id="btnNhap">Nhập liệu</a>
+        <div class="search-container">
+        <button id="searchBtn" class="btn-nav">🔍</button>
+        <input type="text" id="searchInput" placeholder="Nhập ngày, tên máy hoặc ID..." />
+        </div>
+        <a href="thongke.html" class="btn-nav" id="btnThongke">Thống kê</a>
+    </div>
+  </header>
+
+
+  <main>
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Ngày</th>
+          <th>Tên máy</th>
+          <th>CPU</th>
+          <th>RAM</th>
+          <th>Ổ cứng</th>
+          <th>Màn hình</th>
+          <th>GPU</th>
+          <th>Cam</th>
+          <th>Led</th>
+          <th>Vân</th>
+          <th>Pin</th>
+          <th>ID</th>
+          <th>Tình trạng vỏ</th>
+          <th>Ghi chú</th>
+          <th>Tổng</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- Dữ liệu sẽ hiển thị tại đây -->
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwTUoINCroDvp87W6xYdlOe-a0uAjAKJF1ykJgmeK7o0xQFq2hO9029BcbiQR497XF1/exec";
+    const btnSearch = document.getElementById("searchBtn");
+    const searchInput = document.getElementById("searchInput");
+    const navBar = document.querySelector(".nav-bar");
+    let isSearchVisible = false;
+    let allData = [];
+
+    // 🎯 Hiển thị/ẩn ô tìm kiếm + hiệu ứng đẩy nút ra hai bên
+    btnSearch.addEventListener("click", () => {
+        isSearchVisible = !isSearchVisible;
+
+        navBar.classList.toggle("nav-expanded", isSearchVisible);
+        btnSearch.parentElement.classList.toggle("search-active", isSearchVisible);
+
+        if (isSearchVisible) {
+        searchInput.focus();
+        } else {
+        searchInput.value = "";
+        renderTable(allData);
+        }
+    });
+
+    // 📄 Lấy dữ liệu từ server
+    async function loadData() {
+        try {
+        const res = await fetch(`${API_URL}/data`);
+        const rows = await res.json();
+
+        allData = rows.slice(2).map(r => ({
+            Ngay: r[0] || "",
+            Tenmay: r[1] || "",
+            CPU: r[2] || "",
+            RAM: r[3] || "",
+            OCung: r[4] || "",
+            Manhinh: r[5] || "",
+            GPU: r[6] || "",
+            Cam: r[7] || "",
+            Led: r[8] || "",
+            Van: r[9] || "",
+            Pin: r[10] || "",
+            ID: r[11] || "",
+            Vo: r[12] || "",
+            Ghichu: r[13] || "",
+            Tong: r[14] || ""
+        }));
+
+        renderTable(allData);
+        } catch (err) {
+        console.error("❌ Lỗi khi tải dữ liệu:", err);
+        }
+    }
+
+    // 🧾 Hiển thị dữ liệu ra bảng
+    function renderTable(data) {
+        const body = document.getElementById("tableBody");
+        if (!body) return;
+        body.innerHTML = data.map(r => `
+        <tr>
+            <td>${r.Ngay}</td>
+            <td>${r.Tenmay}</td>
+            <td>${r.CPU}</td>
+            <td>${r.RAM}</td>
+            <td>${r.OCung}</td>
+            <td>${r.Manhinh}</td>
+            <td>${r.GPU}</td>
+            <td>${r.Cam}</td>
+            <td>${r.Led}</td>
+            <td>${r.Van}</td>
+            <td>${r.Pin}</td>
+            <td>${r.ID}</td>
+            <td>${r.Vo}</td>
+            <td>${r.Ghichu}</td>
+            <td>${r.Tong}</td>
+        </tr>
+        `).join("");
+    }
+
+    // 🔍 Lọc dữ liệu theo từ khóa (ngày, tên máy, ID)
+    searchInput.addEventListener("input", () => {
+        const keyword = searchInput.value.toLowerCase();
+        const filtered = allData.filter(r =>
+        r.Ngay.toLowerCase().includes(keyword) ||
+        r.Tenmay.toLowerCase().includes(keyword) ||
+        r.ID.toLowerCase().includes(keyword)
+        );
+        renderTable(filtered);
+    });
+
+    // 🚀 Gọi hàm load dữ liệu khi trang load xong
+    document.addEventListener("DOMContentLoaded", loadData);
+    // ✋ Cho phép kéo thay đổi độ rộng cột
+    document.querySelectorAll("th").forEach(th => {
+        const grip = document.createElement("div");
+        grip.style.position = "absolute";
+        grip.style.right = "0";
+        grip.style.top = "0";
+        grip.style.width = "5px";
+        grip.style.cursor = "col-resize";
+        grip.style.userSelect = "none";
+        grip.style.height = "100%";
+        th.appendChild(grip);
+
+        let startX, startWidth;
+
+        grip.addEventListener("mousedown", e => {
+            startX = e.pageX;
+            startWidth = th.offsetWidth;
+            th.classList.add("resizing");
+            document.addEventListener("mousemove", resize);
+            document.addEventListener("mouseup", stopResize);
+        });
+
+        function resize(e) {
+            const diff = e.pageX - startX;
+            th.style.width = `${startWidth + diff}px`;
+        }
+
+        function stopResize() {
+            th.classList.remove("resizing");
+            document.removeEventListener("mousemove", resize);
+            document.removeEventListener("mouseup", stopResize);
+        }
+        });
+        th.style.minWidth = `${startWidth + diff}px`;
+        th.style.maxWidth = `${startWidth + diff}px`;
+
+
+    </script>
+
+</body>
+</html>
