@@ -1,5 +1,5 @@
 // Cấu hình URL backend (API)
-const API_URL = "https://script.google.com/macros/s/AKfycbwTUoINCroDvp87W6xYdlOe-a0uAjAKJF1ykJgmeK7o0xQFq2hO9029BcbiQR497XF1/exec";
+const API_URL = "http://localhost:3000";
 
 // 1️⃣ Ẩn/hiện các tab (section)
 function showTab(id) {
