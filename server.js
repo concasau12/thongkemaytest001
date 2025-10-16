@@ -144,4 +144,4 @@ app.get("/suggest", async (req, res) => {
 });
 
 // 🚀 Khởi chạy server
-app.listen(3000, () => console.log("✅ Server chạy tại: https://script.google.com/macros/s/AKfycbwTUoINCroDvp87W6xYdlOe-a0uAjAKJF1ykJgmeK7o0xQFq2hO9029BcbiQR497XF1/exec"));
+app.listen(3000, () => console.log("✅ Server chạy tại: http://localhost:3000"));
