@@ -1,5 +1,5 @@
 // Cấu hình URL backend (API)
-const API_URL = "http://localhost:3000";
+const API_URL = "https://thongkemaytest001.onrender.c";
 
 // 1️⃣ Ẩn/hiện các tab (section)
 function showTab(id) {
