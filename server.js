@@ -3,6 +3,13 @@ import { google } from "googleapis";
 import cors from "cors";
 import dotenv from "dotenv";
 
+import cors from "cors";
+app.use(cors({
+  origin: "*", // Cho phép mọi domain, đặc biệt GitHub Pages
+  methods: ["GET", "POST"],
+}));
+
+
 dotenv.config();
 const app = express();
 app.use(express.json());
